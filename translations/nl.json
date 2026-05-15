@@ -1,0 +1,86 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "AquaForte DM-VARIO instellen",
+        "description": "Kies hoe je verbinding wilt maken met je pomp.",
+        "menu_options": {
+          "discover": "Apparaten zoeken",
+          "manual": "IP-adres handmatig invoeren"
+        }
+      },
+      "pick_device": {
+        "title": "Apparaat selecteren",
+        "data": {
+          "device": "Gevonden apparaten"
+        }
+      },
+      "manual": {
+        "title": "Handmatige verbinding",
+        "data": {
+          "host": "IP-adres van de pomp",
+          "name": "Naam"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan geen verbinding maken met de pomp. Controleer het IP-adres.",
+      "invalid_auth": "Authenticatie mislukt.",
+      "unknown": "Onbekende fout."
+    },
+    "abort": {
+      "already_configured": "Dit apparaat is al geconfigureerd."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "fault_overcurrent": {
+        "name": "Overstroomfout"
+      },
+      "fault_overvoltage": {
+        "name": "Overspanningsfout"
+      },
+      "fault_overtemp": {
+        "name": "Overtemperatuurfout"
+      },
+      "fault_undervoltage": {
+        "name": "Onderspanningsfout"
+      },
+      "fault_locked_rotor": {
+        "name": "Geblokkeerde rotor"
+      },
+      "fault_no_load": {
+        "name": "Geen belasting"
+      },
+      "fault_uart": {
+        "name": "Communicatiefout"
+      }
+    },
+    "number": {
+      "pump_speed": {
+        "name": "Pompsnelheid"
+      },
+      "feed_duration": {
+        "name": "Voerduur"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Bedrijfsmodus",
+        "state": {
+          "shutdown": "Uit",
+          "automatic": "Automatisch",
+          "feed": "Voeren"
+        }
+      }
+    },
+    "switch": {
+      "power": {
+        "name": "Aan/uit"
+      },
+      "feed_mode": {
+        "name": "Voermodus"
+      }
+    }
+  }
+}

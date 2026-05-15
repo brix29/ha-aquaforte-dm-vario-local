@@ -1,0 +1,86 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up AquaForte DM-VARIO",
+        "description": "Choose how to connect to your pump.",
+        "menu_options": {
+          "discover": "Discover devices",
+          "manual": "Enter IP address manually"
+        }
+      },
+      "pick_device": {
+        "title": "Select device",
+        "data": {
+          "device": "Discovered devices"
+        }
+      },
+      "manual": {
+        "title": "Manual connection",
+        "data": {
+          "host": "Pump IP address",
+          "name": "Name"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the pump. Check the IP address.",
+      "invalid_auth": "Authentication failed.",
+      "unknown": "Unknown error."
+    },
+    "abort": {
+      "already_configured": "This device is already configured."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "fault_overcurrent": {
+        "name": "Overcurrent fault"
+      },
+      "fault_overvoltage": {
+        "name": "Overvoltage fault"
+      },
+      "fault_overtemp": {
+        "name": "Overtemperature fault"
+      },
+      "fault_undervoltage": {
+        "name": "Undervoltage fault"
+      },
+      "fault_locked_rotor": {
+        "name": "Locked rotor fault"
+      },
+      "fault_no_load": {
+        "name": "No load fault"
+      },
+      "fault_uart": {
+        "name": "Communication fault"
+      }
+    },
+    "number": {
+      "pump_speed": {
+        "name": "Pump speed"
+      },
+      "feed_duration": {
+        "name": "Feed duration"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Operating mode",
+        "state": {
+          "shutdown": "Shutdown",
+          "automatic": "Automatic",
+          "feed": "Feed"
+        }
+      }
+    },
+    "switch": {
+      "power": {
+        "name": "Power"
+      },
+      "feed_mode": {
+        "name": "Feed mode"
+      }
+    }
+  }
+}

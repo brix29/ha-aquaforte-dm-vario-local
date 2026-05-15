@@ -1,13 +1,15 @@
-"""AquaForte number entities: Motor_Speed and FeedTime."""
+"""AquaForte number entities."""
+
 from __future__ import annotations
 
 from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import PERCENTAGE, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import EP_FEED_TIME, EP_MOTOR_SPEED
+from .const import EP_FEED_TIME, EP_MOTOR_SPEED, EndpointDef
 from .coordinator import AquaForteCoordinator
 
 
@@ -17,37 +19,59 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     coordinator: AquaForteCoordinator = entry.runtime_data
-    async_add_entities([
-        AquaForteNumber(
-            coordinator, EP_MOTOR_SPEED,
-            name="Pumpengeschwindigkeit",
-            icon="mdi:speedometer",
-            native_min=0, native_max=100, native_step=1,
-            native_unit="%",
-            mode=NumberMode.SLIDER,
-        ),
-        AquaForteNumber(
-            coordinator, EP_FEED_TIME,
-            name="Fütterungsdauer",
-            icon="mdi:timer",
-            native_min=1, native_max=60, native_step=1,
-            native_unit="s",
-            mode=NumberMode.BOX,
-        ),
-    ])
+
+    async_add_entities(
+        [
+            AquaForteNumber(
+                coordinator=coordinator,
+                endpoint=EP_MOTOR_SPEED,
+                translation_key="pump_speed",
+                icon="mdi:speedometer",
+                native_min=30,
+                native_max=100,
+                native_step=1,
+                native_unit=PERCENTAGE,
+                mode=NumberMode.SLIDER,
+            ),
+            AquaForteNumber(
+                coordinator=coordinator,
+                endpoint=EP_FEED_TIME,
+                translation_key="feed_duration",
+                icon="mdi:timer",
+                native_min=1,
+                native_max=60,
+                native_step=1,
+                native_unit=UnitOfTime.SECONDS,
+                mode=NumberMode.BOX,
+            ),
+        ]
+    )
 
 
 class AquaForteNumber(CoordinatorEntity[AquaForteCoordinator], NumberEntity):
+    """AquaForte number entity."""
 
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator, endpoint, name, icon, native_min, native_max, native_step, native_unit, mode) -> None:
+    def __init__(
+        self,
+        coordinator: AquaForteCoordinator,
+        endpoint: EndpointDef,
+        translation_key: str,
+        icon: str,
+        native_min: int,
+        native_max: int,
+        native_step: int,
+        native_unit: str,
+        mode: NumberMode,
+    ) -> None:
         super().__init__(coordinator)
         self._endpoint = endpoint
-        self._attr_name = name
+        self._attr_translation_key = translation_key
         self._attr_icon = icon
         self._attr_native_min_value = native_min
         self._attr_native_max_value = native_max
+        self._attr_suggested_display_precision = 0        
         self._attr_native_step = native_step
         self._attr_native_unit_of_measurement = native_unit
         self._attr_mode = mode
@@ -58,6 +82,7 @@ class AquaForteNumber(CoordinatorEntity[AquaForteCoordinator], NumberEntity):
     def native_value(self) -> float | None:
         if self.coordinator.data is None:
             return None
+
         val = self.coordinator.data.get(self._endpoint.name)
         return float(val) if val is not None else None
 

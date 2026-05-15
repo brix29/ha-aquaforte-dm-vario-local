@@ -3,7 +3,11 @@
     "step": {
       "user": {
         "title": "AquaForte DM-VARIO einrichten",
-        "description": "Suche nach Geräten im Netzwerk oder gib die IP-Adresse manuell ein."
+        "description": "Wähle aus, wie du dich mit deiner Pumpe verbinden möchtest.",
+        "menu_options": {
+          "discover": "Geräte suchen",
+          "manual": "IP-Adresse manuell eingeben"
+        }
       },
       "pick_device": {
         "title": "Gerät auswählen",
@@ -20,12 +24,63 @@
       }
     },
     "error": {
-      "cannot_connect": "Verbindung zur Pumpe fehlgeschlagen. IP-Adresse prüfen.",
-      "invalid_auth":   "Authentifizierung fehlgeschlagen.",
-      "unknown":        "Unbekannter Fehler."
+      "cannot_connect": "Verbindung zur Pumpe fehlgeschlagen. Prüfe die IP-Adresse.",
+      "invalid_auth": "Authentifizierung fehlgeschlagen.",
+      "unknown": "Unbekannter Fehler."
     },
     "abort": {
       "already_configured": "Dieses Gerät ist bereits eingerichtet."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "fault_overcurrent": {
+        "name": "Überstromfehler"
+      },
+      "fault_overvoltage": {
+        "name": "Überspannungsfehler"
+      },
+      "fault_overtemp": {
+        "name": "Übertemperaturfehler"
+      },
+      "fault_undervoltage": {
+        "name": "Unterspannungsfehler"
+      },
+      "fault_locked_rotor": {
+        "name": "Blockierter Rotor"
+      },
+      "fault_no_load": {
+        "name": "Keine Last"
+      },
+      "fault_uart": {
+        "name": "Kommunikationsfehler"
+      }
+    },
+    "number": {
+      "pump_speed": {
+        "name": "Pumpengeschwindigkeit"
+      },
+      "feed_duration": {
+        "name": "Fütterungsdauer"
+      }
+    },
+    "select": {
+      "operating_mode": {
+        "name": "Betriebsmodus",
+        "state": {
+          "shutdown": "Aus",
+          "automatic": "Automatisch",
+          "feed": "Fütterung"
+        }
+      }
+    },
+    "switch": {
+      "power": {
+        "name": "Ein/Aus"
+      },
+      "feed_mode": {
+        "name": "Fütterungsmodus"
+      }
     }
   }
 }
