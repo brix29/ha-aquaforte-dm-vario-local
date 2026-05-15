@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-DOMAIN = "aquaforte"
+DOMAIN = "aquaforte_dm_vario_local"
 
 TCP_PORT = 12416
 UDP_PORT = 12414

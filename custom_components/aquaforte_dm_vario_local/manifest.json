@@ -1,5 +1,5 @@
 {
-  "domain": "aquaforte",
+  "domain": "aquaforte_dm_vario_local",
   "name": "AquaForte DM-VARIO",
   "codeowners": ["@brix29"],
   "config_flow": true,
