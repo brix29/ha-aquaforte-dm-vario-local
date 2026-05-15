@@ -12,7 +12,7 @@ Controls the pump directly over your local network — no cloud, no MQTT broker 
 | Pump on/off | Switch | Power the pump on or off |
 | Feed mode | Switch | Activate feeding pause mode |
 | Operating mode | Select | Shutdown / Automatic / Feed |
-| Pump speed | Number | Motor speed 0–100 % (slider) |
+| Pump speed | Number | Motor speed 30–100 % (slider) |
 | Feed duration | Number | Feed pause duration 1–60 s |
 | Fault sensors × 7 | Binary sensor | Overcurrent, Overvoltage, Overtemp, Undervoltage, Locked rotor, No load, UART (diagnostic) |
 
