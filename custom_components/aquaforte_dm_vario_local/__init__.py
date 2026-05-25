@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ["switch", "number", "select", "binary_sensor"]
 
-type AquaForteConfigEntry = ConfigEntry[AquaForteCoordinator]
+AquaForteConfigEntry = ConfigEntry[AquaForteCoordinator]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: AquaForteConfigEntry) -> bool:
