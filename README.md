@@ -24,7 +24,7 @@ Controls the pump directly over your local network — no cloud, no MQTT broker 
 
 ## Installation
 
-1. Copy the `aquaforte/` folder into your HA `config/custom_components/` directory.
+1. Copy the `aquaforte_dm_vario_local/` folder into your HA `config/custom_components/` directory.
 2. Restart Home Assistant.
 3. Go to **Settings → Integrations → Add integration** and search for **AquaForte**.
 4. Choose **Discover** to auto-find the pump via UDP, or enter the IP address manually.
