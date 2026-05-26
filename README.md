@@ -1,6 +1,6 @@
 # AquaForte DM-VARIO Local – Home Assistant Integration
 
-> **⚠️ Alpha – work in progress.** Tested on a single device. Use at your own risk and please report issues.
+> **⚠️ Beta – work in progress.** Tested by a limited number of users. Use at your own risk and please report issues.
 
 Local-only Home Assistant integration for the **AquaForte DM-VARIO WIFI** pond/pool pump.  
 Controls the pump directly over your local network — no cloud, no MQTT broker required.
