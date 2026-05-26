@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from datetime import timedelta
+from typing import Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -23,7 +24,7 @@ from .protocol import AquaForteProtocol, build_control_payload, parse_status_buf
 _LOGGER = logging.getLogger(__name__)
 
 
-class AquaForteCoordinator(DataUpdateCoordinator[dict[str, any]]):
+class AquaForteCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Coordinator for one AquaForte device."""
 
     def __init__(self, hass: HomeAssistant, host: str, device_id: str) -> None:
@@ -98,7 +99,7 @@ class AquaForteCoordinator(DataUpdateCoordinator[dict[str, any]]):
                         except Exception as reconnect_exc:
                             _LOGGER.error("Reconnect failed: %s", reconnect_exc)
 
-    async def _async_update_data(self) -> dict[str, any]:
+    async def _async_update_data(self) -> dict[str, Any]:
         """Poll device status."""
         async with self._lock:
             try:
@@ -111,7 +112,7 @@ class AquaForteCoordinator(DataUpdateCoordinator[dict[str, any]]):
 
         return parse_status_buffer(raw)
 
-    async def set_value(self, endpoint: EndpointDef, value: any) -> None:
+    async def set_value(self, endpoint: EndpointDef, value: Any) -> None:
         """Send a command and refresh state."""
         async with self._lock:
             try:
