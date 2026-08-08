@@ -17,6 +17,7 @@ from .const import (
     POLL_INTERVAL,
     POST_COMMAND_REFRESH_DELAY,
     RECONNECT_INTERVAL,
+    RECONNECT_MAX_INTERVAL,
     WRITABLE_FLAG_SIZE,
     EndpointDef,
 )
@@ -77,28 +78,52 @@ class AquaForteCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         _LOGGER.info("Connected and logged in to AquaForte %s (%s)", self.device_id, self.host)
 
     async def _keepalive_loop(self) -> None:
-        """Send ping every KEEPALIVE_INTERVAL seconds; reconnect on failure."""
+        """Send ping every KEEPALIVE_INTERVAL seconds; reconnect on failure.
+
+        Reconnect attempts back off exponentially (RECONNECT_INTERVAL up to
+        RECONNECT_MAX_INTERVAL) so an unplugged or unreachable pump does not
+        flood the network and the log every few seconds. The backoff sleep
+        happens OUTSIDE the lock — commands and polls must not queue behind a
+        multi-minute wait.
+        """
         consecutive_failures = 0
+        reconnect_backoff = RECONNECT_INTERVAL
         while True:
             await asyncio.sleep(KEEPALIVE_INTERVAL)
             async with self._lock:
                 try:
                     await self._protocol.ping()
                     consecutive_failures = 0
+                    reconnect_backoff = RECONNECT_INTERVAL
                 except Exception as exc:
                     consecutive_failures += 1
                     _LOGGER.warning(
                         "Ping failed (%d/3) for %s: %s", consecutive_failures, self.device_id, exc
                     )
-                    if consecutive_failures >= 3:
-                        _LOGGER.error("Lost connection to %s, reconnecting…", self.device_id)
-                        await self._protocol.disconnect()
-                        await asyncio.sleep(RECONNECT_INTERVAL)
-                        try:
-                            await self._connect()
-                            consecutive_failures = 0
-                        except Exception as reconnect_exc:
-                            _LOGGER.error("Reconnect failed: %s", reconnect_exc)
+
+            if consecutive_failures >= 3:
+                _LOGGER.error(
+                    "Lost connection to %s, reconnecting in %d s…",
+                    self.device_id, reconnect_backoff,
+                )
+                async with self._lock:
+                    await self._protocol.disconnect()
+                await asyncio.sleep(reconnect_backoff)
+                async with self._lock:
+                    try:
+                        await self._connect()
+                        consecutive_failures = 0
+                        reconnect_backoff = RECONNECT_INTERVAL
+                    except Exception as reconnect_exc:
+                        reconnect_backoff = min(reconnect_backoff * 2, RECONNECT_MAX_INTERVAL)
+                        _LOGGER.error(
+                            "Reconnect failed (next attempt in %d s): %s",
+                            reconnect_backoff, reconnect_exc,
+                        )
+                if consecutive_failures == 0:
+                    _LOGGER.info("Reconnected to %s", self.device_id)
+                    await self.async_request_refresh()
+                continue
 
             # Outside the lock: the device relays control commands sent by
             # OTHER LAN clients (official app, a second HA) to us. Turn such
