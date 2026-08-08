@@ -176,6 +176,20 @@ class AquaForteProtocol:
         self._writer: asyncio.StreamWriter | None = None
         self._packet_counter = 0
         self._connected = False
+        self._control_activity = False
+
+    def consume_control_activity(self) -> bool:
+        """Return True once if another LAN client sent a control command.
+
+        The device relays every DATA_CONTROL_REQUEST (0x0093) it receives to
+        all other connected LAN clients (verified on a DM-VARIO WIFI). Those
+        echoes surface in the skip loops below; this flag lets the coordinator
+        turn them into an immediate state refresh instead of waiting for the
+        next scheduled poll.
+        """
+        seen = self._control_activity
+        self._control_activity = False
+        return seen
 
     @property
     def connected(self) -> bool:
@@ -270,6 +284,11 @@ class AquaForteProtocol:
             msg_type, _ = await self._recv()
             if msg_type == MSG_PING_RESPONSE:
                 break
+            if msg_type == MSG_DATA_CONTROL_REQ:
+                # Another LAN client (app / second HA) sent a command — the
+                # device relayed it to us. Remember it so the coordinator can
+                # refresh promptly.
+                self._control_activity = True
             # Consume stale packets (control responses, unsolicited status)
             _LOGGER.debug("Skipping stale packet 0x%04x during ping", msg_type)
 
@@ -286,6 +305,8 @@ class AquaForteProtocol:
                     return payload[1:]
                 _LOGGER.debug("Ignoring status response with P0=0x%02x", p0)
             else:
+                if msg_type == MSG_DATA_CONTROL_REQ:
+                    self._control_activity = True
                 # Skip stale control responses, ping responses, etc.
                 _LOGGER.debug("Skipping stale packet 0x%04x while waiting for status", msg_type)
 

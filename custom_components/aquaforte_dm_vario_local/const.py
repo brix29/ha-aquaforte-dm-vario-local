@@ -12,8 +12,10 @@ KEEPALIVE_INTERVAL = 5       # seconds between pings
 POLL_INTERVAL = 120          # seconds between status polls
 CONNECT_TIMEOUT = 10         # seconds
 RESPONSE_TIMEOUT = 5         # seconds
-RECONNECT_INTERVAL = 10      # seconds
+RECONNECT_INTERVAL = 10      # seconds (initial; doubles per failed attempt)
+RECONNECT_MAX_INTERVAL = 300  # seconds (backoff ceiling)
 DISCOVERY_TIMEOUT = 2        # seconds waiting for UDP replies
+POST_COMMAND_REFRESH_DELAY = 1.5  # seconds between a command and the verify poll
 
 CONF_HOST = "host"
 CONF_DEVICE_ID = "device_id"
