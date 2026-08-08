@@ -15,6 +15,7 @@ from .const import (
     DOMAIN,
     KEEPALIVE_INTERVAL,
     POLL_INTERVAL,
+    POST_COMMAND_REFRESH_DELAY,
     RECONNECT_INTERVAL,
     WRITABLE_FLAG_SIZE,
     EndpointDef,
@@ -99,6 +100,17 @@ class AquaForteCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                         except Exception as reconnect_exc:
                             _LOGGER.error("Reconnect failed: %s", reconnect_exc)
 
+            # Outside the lock: the device relays control commands sent by
+            # OTHER LAN clients (official app, a second HA) to us. Turn such
+            # an echo into a prompt refresh so entities follow external
+            # changes within seconds instead of the next scheduled poll.
+            if self._protocol.consume_control_activity():
+                _LOGGER.debug(
+                    "Control command from another client seen on %s, refreshing",
+                    self.device_id,
+                )
+                await self._delayed_refresh()
+
     async def _async_update_data(self) -> dict[str, Any]:
         """Poll device status."""
         async with self._lock:
@@ -124,4 +136,13 @@ class AquaForteCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if len(new_payload) >= WRITABLE_FLAG_SIZE + CTRL_CACHE_SIZE:
             self._ctrl_bytes = new_payload[WRITABLE_FLAG_SIZE: WRITABLE_FLAG_SIZE + CTRL_CACHE_SIZE]
 
+        # Commands are fire-and-forget and the pump applies them
+        # asynchronously — a refresh issued immediately still reads the OLD
+        # state, which then sticks until the next scheduled poll. A short
+        # delay before the verify poll lets the pump apply the command first.
+        self.hass.async_create_task(self._delayed_refresh())
+
+    async def _delayed_refresh(self) -> None:
+        """Poll the device state shortly after a control command."""
+        await asyncio.sleep(POST_COMMAND_REFRESH_DELAY)
         await self.async_request_refresh()
